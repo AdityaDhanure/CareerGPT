@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback, useRef } from 'react';
-import { FaUser, FaSignOutAlt, FaDownload, FaArrowUp, FaSquare, FaEdit, FaEdge } from 'react-icons/fa';
+import { FaUser, FaSignOutAlt, FaSignInAlt, FaDownload, FaArrowUp, FaSquare, FaEdit, FaEdge } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +14,7 @@ export const Dashboard = React.memo(function Dashboard() {
     const [loading, setLoading] = useState(false); // ← Loading state for generating roadmap
     const navigate = useNavigate();
     const [user, setUser] = useState({});
+    const [isLogin, setIsLogin] = useState(false);
     const [userPhoto, setUserPhoto] = useState(null);
     const [selectedRoadmap, setSelectedRoadmap] = useState(null); // ← State to hold the selected roadmap for display
     const [roadmaps, setRoadmaps] = useState([]); // ← State to hold all roadmaps and display in sidebar
@@ -37,12 +38,13 @@ export const Dashboard = React.memo(function Dashboard() {
     // Handle fetching user data
     useEffect(() => {
         async function fetchUser() {
-            await axios.get('http://localhost:5001/api/auth/me', {
+            await axios.get('https://careergpt-be.onrender.com/api/auth/me', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
             }).then(res => {
                 setUser(res.data);
+                setIsLogin(true);
                 setUserPhoto(res.data.photoURL);
             })
         }
@@ -53,7 +55,7 @@ export const Dashboard = React.memo(function Dashboard() {
     useEffect(() => {
         async function fetchRoadmaps() {
             try {
-                const res = await axios.get('http://localhost:5001/api/roadmap/', {
+                const res = await axios.get('https://careergpt-be.onrender.com/api/roadmap/', {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('token')
                 }
@@ -79,7 +81,7 @@ export const Dashboard = React.memo(function Dashboard() {
                 setLoading(false);
             return;
             }
-            const res = await axios.post("http://localhost:5001/api/roadmap/generate", {
+            const res = await axios.post("https://careergpt-be.onrender.com/api/roadmap/generate", {
                 skills: skills.split(',').map(s => s.trim()),
                 goal: goals
             }, {
@@ -164,7 +166,7 @@ export const Dashboard = React.memo(function Dashboard() {
             return;
         }
         try{
-            const response = await axios.post('http://localhost:5001/api/roadmap/export', {
+            const response = await axios.post('https://careergpt-be.onrender.com/api/roadmap/export', {
                 htmlContent: `<html><head><style>body{font-family:Arial;}</style></head><body>${html}</body></html>`,
             },{
                 headers: {
@@ -197,7 +199,7 @@ export const Dashboard = React.memo(function Dashboard() {
             return;
         }
 
-        axios.put(`http://localhost:5001/api/roadmap/update-title/${roadmap.id}`, {
+        axios.put(`https://careergpt-be.onrender.com/api/roadmap/update-title/${roadmap.id}`, {
             title: titleToUpdate
         }, {
             headers: {
@@ -226,7 +228,7 @@ export const Dashboard = React.memo(function Dashboard() {
             return;
         };
 
-        axios.delete(`http://localhost:5001/api/roadmap/delete/${roadmapId}`, {
+        axios.delete(`https://careergpt-be.onrender.com/api/roadmap/delete/${roadmapId}`, {
             headers: {
                 "Authorization": 'Bearer ' + localStorage.getItem('token')
             }
@@ -374,10 +376,18 @@ export const Dashboard = React.memo(function Dashboard() {
                                     navigate('/signin');
                                 }} 
                                 className="block w-full text-left px-4 py-2 hover:bg-gray-100">
-                                <span className="flex items-center space-x-2">
-                                    <FaSignOutAlt />  
+                                {(isLogin) ? (
+                                    <span className="flex items-center space-x-2">
+                                        <FaSignOutAlt />  
                                     <span>Logout</span>
                                 </span>
+                                ) : (
+                                    <span className="flex items-center space-x-2">
+                                        <FaSignInAlt />  
+                                    <span>Login</span>
+                                </span>
+                                )}
+                                
                             </button>
                             </div>
                         )}
