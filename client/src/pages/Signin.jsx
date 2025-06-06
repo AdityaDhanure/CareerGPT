@@ -19,11 +19,13 @@ export function Signin() {
 
     const handleLogin = useCallback(async (e) => {
         e.preventDefault();
+        console.log('Login attempt with:', { email, password });
         try {
             const response = await axios.post('https://careergpt-be.onrender.com/api/auth/login', {
                 email, 
                 password,
             }); 
+            console.log('Login response:', response.data);
             localStorage.setItem('token', response.data.token);
             navigate('/dashboard');
         } catch (error) {
