@@ -22,6 +22,7 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 // app.use(express.json());
+app.options('*', cors()); // handle preflight
 
 app.use('/api/auth', authRoutes);
 app.use('/api/roadmap', roadmapRoutes);
