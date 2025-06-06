@@ -14,18 +14,18 @@ import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
 
-// const frontendUrl = 'https://career-gpt-cyan.vercel.app'
+const frontendUrl = 'https://career-gpt-cyan.vercel.app'
 
 app.use(cors({
-  origin: process.env.CORS_ORIGIN, // or your frontend domain
+  origin: frontendUrl, // or your frontend domain
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.options('*', cors()); // handle preflight
+// app.options('*', cors()); // handle preflight
 
-// app.use(bodyParser.json());
-app.use(express.json());
+app.use(bodyParser.json());
+//app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/roadmap', roadmapRoutes);
