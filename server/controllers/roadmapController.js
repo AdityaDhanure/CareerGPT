@@ -133,6 +133,7 @@ export const deleteRoadmap = async (req, res) => {
 
 export const exportRoadmapPDF = async (req, res) => {
   const { htmlContent } = req.body;
+  console.log("Received HTML:", req.body.htmlContent);
   try {
         const browser = await puppeteer.launch({
             headless: 'new',

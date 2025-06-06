@@ -186,6 +186,7 @@ export const Dashboard = React.memo(function Dashboard() {
             link.remove();
         } catch (error) {
             console.error("Error exporting roadmap:", error);
+            console.error(error.response?.data || error.message);
             alert("Failed to export roadmap. Please try again.");
         }
     }, [selectedRoadmap]);
