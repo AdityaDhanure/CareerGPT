@@ -1,3 +1,4 @@
+import cors from 'cors'; // to connect both frontend & backend
 import express from 'express';
 import mongoose from 'mongoose';
 
@@ -5,7 +6,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import bodyParser from 'body-parser'; // to parse incoming request bodies
-import cors from 'cors'; // to connect both frontend & backend
 
 import authRoutes from './routes/authRoutes.js';
 import roadmapRoutes from './routes/roadmapRoutes.js';
@@ -15,14 +15,15 @@ import errorHandler from './middleware/errorHandler.js';
 const app = express();
 
 app.use(cors({
-  origin: 'https://career-gpt-cyan.vercel.app', // or your frontend domain
+  origin: process.env.CORS_ORIGIN, // or your frontend domain
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(bodyParser.json());
-// app.use(express.json());
 app.options('*', cors()); // handle preflight
+
+// app.use(bodyParser.json());
+app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/roadmap', roadmapRoutes);
