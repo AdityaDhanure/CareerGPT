@@ -14,10 +14,8 @@ import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
 
-const frontendUrl = 'https://career-gpt-cyan.vercel.app'
-
 app.use(cors({
-  origin: frontendUrl, // or your frontend domain
+  origin: process.env.CORS_ORIGIN, // or your frontend domain
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']

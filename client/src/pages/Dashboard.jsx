@@ -38,7 +38,7 @@ export const Dashboard = React.memo(function Dashboard() {
     // Handle fetching user data
     useEffect(() => {
         async function fetchUser() {
-            await axios.get('https://careergpt-be.onrender.com/api/auth/me', {
+            await axios.get('https://careergpt-backend.onrender.com/api/auth/me', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
@@ -55,7 +55,7 @@ export const Dashboard = React.memo(function Dashboard() {
     useEffect(() => {
         async function fetchRoadmaps() {
             try {
-                const res = await axios.get('https://careergpt-be.onrender.com/api/roadmap/', {
+                const res = await axios.get('https://careergpt-backend.onrender.com/api/roadmap/', {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('token')
                 }
@@ -81,7 +81,7 @@ export const Dashboard = React.memo(function Dashboard() {
                 setLoading(false);
             return;
             }
-            const res = await axios.post("https://careergpt-be.onrender.com/api/roadmap/generate", {
+            const res = await axios.post("https://careergpt-backend.onrender.com/api/roadmap/generate", {
                 skills: skills.split(',').map(s => s.trim()),
                 goal: goals
             }, {
@@ -166,7 +166,7 @@ export const Dashboard = React.memo(function Dashboard() {
             return;
         }
         try{
-            const response = await axios.post('https://careergpt-be.onrender.com/api/roadmap/export', {
+            const response = await axios.post('https://careergpt-backend.onrender.com/api/roadmap/export', {
                 htmlContent: `<html><head><style>body{font-family:Arial;}</style></head><body>${html}</body></html>`,
             },{
                 headers: {
@@ -199,7 +199,7 @@ export const Dashboard = React.memo(function Dashboard() {
             return;
         }
 
-        axios.put(`https://careergpt-be.onrender.com/api/roadmap/update-title/${roadmap.id}`, {
+        axios.put(`https://careergpt-backend.onrender.com/api/roadmap/update-title/${roadmap.id}`, {
             title: titleToUpdate
         }, {
             headers: {
@@ -228,7 +228,7 @@ export const Dashboard = React.memo(function Dashboard() {
             return;
         };
 
-        axios.delete(`https://careergpt-be.onrender.com/api/roadmap/delete/${roadmapId}`, {
+        axios.delete(`https://careergpt-backend.onrender.com/api/roadmap/delete/${roadmapId}`, {
             headers: {
                 "Authorization": 'Bearer ' + localStorage.getItem('token')
             }

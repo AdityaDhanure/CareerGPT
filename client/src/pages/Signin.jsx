@@ -21,7 +21,7 @@ export function Signin() {
         e.preventDefault();
         console.log('Login attempt with:', { email, password });
         try {
-            const response = await axios.post('https://careergpt-be.onrender.com/api/auth/login', {
+            const response = await axios.post('https://careergpt-backend.onrender.com/api/auth/login', {
                 email, 
                 password,
             },{
@@ -46,7 +46,7 @@ export function Signin() {
             const user = result.user;
             console.log('User info:', user);
             // Send user data to your backend for further processing
-            const response = await axios.post('https://careergpt-be.onrender.com/api/auth/google-login', {
+            const response = await axios.post('https://careergpt-backend.onrender.com/api/auth/google-login', {
                 email: user.email,
                 name: user.displayName,
                 photoURL: user.photoURL,

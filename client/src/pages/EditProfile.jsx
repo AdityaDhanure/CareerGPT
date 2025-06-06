@@ -19,7 +19,7 @@ export const EditProfile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get('https://careergpt-be.onrender.com/api/auth/me', {
+        const res = await axios.get('https://careergpt-backend.onrender.com/api/auth/me', {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('token')
           }
@@ -46,7 +46,7 @@ export const EditProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put('https://careergpt-be.onrender.com/api/auth/edit-profile',
+      await axios.put('https://careergpt-backend.onrender.com/api/auth/edit-profile',
         { // Data to be sent in the request body
           name: editingName ? name : undefined,
           currentPassword: editingPassword ? currentPassword : undefined,

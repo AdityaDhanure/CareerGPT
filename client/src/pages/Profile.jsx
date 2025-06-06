@@ -10,7 +10,7 @@ export function Profile() {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const res = await axios.get('https://careergpt-be.onrender.com/api/auth/me', {
+                const res = await axios.get('https://careergpt-backend.onrender.com/api/auth/me', {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('token')
                 }
