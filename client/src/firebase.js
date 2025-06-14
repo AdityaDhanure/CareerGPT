@@ -1,14 +1,22 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
+const API_KEY = import.meta.env.VITE_FIREBASE_API_KEY;
+const AUTH_DOMAIN = import.meta.env.VITE_FIREBASE_AUTH_DOMAIN;
+const PROJECT_ID = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+const STORAGE_BUCKET = import.meta.env.VITE_FIREBASE_STORAGE_BUCKET;
+const MESSAGE_SENDER_ID = import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID;
+const APP_ID = import.meta.env.VITE_FIREBASE_APP_ID;
+const MEASUREMENT_ID = import.meta.env.VITE_FIREBASE_MEASUREMENT_ID;
+
 const firebaseConfig = {
-  apiKey: "AIzaSyCaR7hxT-4r7XT_D_qAe7_IrOggE7HJIw8",
-  authDomain: "careergpt-9d016.firebaseapp.com",
-  projectId: "careergpt-9d016",
-  storageBucket: "careergpt-9d016.firebasestorage.app",
-  messagingSenderId: "825342498527",
-  appId: "1:825342498527:web:6c0b424016e7cead5a3b6a",
-  measurementId: "G-0YD7ENTWFQ"
+  apiKey: API_KEY,
+  authDomain: AUTH_DOMAIN,
+  projectId: PROJECT_ID,
+  storageBucket: STORAGE_BUCKET,
+  messagingSenderId: MESSAGE_SENDER_ID,
+  appId: APP_ID,
+  measurementId: MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);
