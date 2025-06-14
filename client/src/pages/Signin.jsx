@@ -19,7 +19,6 @@ export function Signin() {
     const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = useCallback(async (e) => {
-        console.log('url is thus: ',BE_BASE_URL)
         e.preventDefault();
         try {
             const response = await axios.post(`${BE_BASE_URL}/api/auth/login`, {
