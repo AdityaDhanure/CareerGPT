@@ -261,7 +261,7 @@ export const Dashboard = React.memo(function Dashboard() {
         <div className="flex space-x-2 sm:w-40 md:w-60 lg:w-64  fixed bg-gray-100 shadow  px-2 sm:px-6   py-2 sm:py-2.5 md:py-3 lg:py-4">
             <motion.img 
                 className='h-7 sm:h-8 md:h-9 lg:h-10 rounded-full cursor-pointer' 
-                src='src/assets/Logo1.png' 
+                src='/assets/Logo1.png' 
                 whileHover={{ 
                     scale: 1.3,
                     transition: {
@@ -513,7 +513,7 @@ export const Dashboard = React.memo(function Dashboard() {
             </header>
 
             {/* Roadmap Body */}
-            <main className="bg-[url('src/assets/Logo10.png')] bg-cover bg-center h-screen w-full  flex overflow-y-auto  px-14 sm:px-16 md:px-6 lg:px-2  lg:pt-3   max-w-3xl lg:space-y-6  sm:ml-12 md:ml-70 lg:ml-128   mt-17 sm:mt-18 md:mt-19 lg:mt-20   mb-28 sm:mb-30 md:mb-36 lg:mb-40">
+            <main className="bg-[url('/assets/Logo10.png')] bg-cover bg-center h-screen w-full  flex overflow-y-auto  px-14 sm:px-16 md:px-6 lg:px-2  lg:pt-3   max-w-3xl lg:space-y-6  sm:ml-12 md:ml-70 lg:ml-128   mt-17 sm:mt-18 md:mt-19 lg:mt-20   mb-28 sm:mb-30 md:mb-36 lg:mb-40">
                 {(selectedRoadmap) ? (
                     <div ref={roadmapRef} className="whitespace-pre-wrap text-gray-800">
                         <h2 className="text-2xl font-bold mb-4 prose prose-md text-gray-800"
