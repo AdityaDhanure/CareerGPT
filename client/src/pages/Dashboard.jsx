@@ -5,7 +5,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../App.css';
 import { marked } from 'marked';
-
+const BE_BASE_URL = import.meta.env.VITE_BE_BASE_URL;
+import { motion, AnimatePresence } from 'framer-motion';
+import { useMediaQuery } from 'react-responsive';
 
 
 export const Dashboard = React.memo(function Dashboard() {
@@ -34,11 +36,16 @@ export const Dashboard = React.memo(function Dashboard() {
 
     const roadmapRef = useRef();
 
+    const [showSidebar, setShowSidebar] = useState(true);
+    const isMidScreen = useMediaQuery({ query: '(min-width: 770px)' });
+
+    
+
 
     // Handle fetching user data
     useEffect(() => {
         async function fetchUser() {
-            await axios.get('https://careergpt-backend.onrender.com/api/auth/me', {
+            await axios.get(`${BE_BASE_URL}/api/auth/me`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
@@ -55,7 +62,7 @@ export const Dashboard = React.memo(function Dashboard() {
     useEffect(() => {
         async function fetchRoadmaps() {
             try {
-                const res = await axios.get('https://careergpt-backend.onrender.com/api/roadmap/', {
+                const res = await axios.get(`${BE_BASE_URL}/api/roadmap/`, {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('token')
                 }
@@ -81,7 +88,7 @@ export const Dashboard = React.memo(function Dashboard() {
                 setLoading(false);
             return;
             }
-            const res = await axios.post("https://careergpt-backend.onrender.com/api/roadmap/generate", {
+            const res = await axios.post(`${BE_BASE_URL}/api/roadmap/generate`, {
                 skills: skills.split(',').map(s => s.trim()),
                 goal: goals
             }, {
@@ -166,7 +173,7 @@ export const Dashboard = React.memo(function Dashboard() {
             return;
         }
         try{
-            const response = await axios.post('https://careergpt-backend.onrender.com/api/roadmap/export', {
+            const response = await axios.post(`${BE_BASE_URL}/api/roadmap/export`, {
                 htmlContent: `<html><head><style>body{font-family:Arial;}</style></head><body>${html}</body></html>`,
             },{
                 headers: {
@@ -200,7 +207,7 @@ export const Dashboard = React.memo(function Dashboard() {
             return;
         }
 
-        axios.put(`https://careergpt-backend.onrender.com/api/roadmap/update-title/${roadmap.id}`, {
+        axios.put(`${BE_BASE_URL}/api/roadmap/update-title/${roadmap.id}`, {
             title: titleToUpdate
         }, {
             headers: {
@@ -229,7 +236,7 @@ export const Dashboard = React.memo(function Dashboard() {
             return;
         };
 
-        axios.delete(`https://careergpt-backend.onrender.com/api/roadmap/delete/${roadmapId}`, {
+        axios.delete(`${BE_BASE_URL}/api/roadmap/delete/${roadmapId}`, {
             headers: {
                 "Authorization": 'Bearer ' + localStorage.getItem('token')
             }
@@ -251,91 +258,200 @@ export const Dashboard = React.memo(function Dashboard() {
   return (
     <div className="flex min-h-screen bg-gray-100">
         {/* Sidebar */}
-        <div className="flex space-x-2 sm:w-40 md:w-60 lg:w-64  fixed bg-gray-100 shadow  px-2 sm:px-6   py-2 sm:py-3 md:py-4 lg:py-5">
-            <img className='h-7 sm:h-8 md:h-9 lg:h-10 rounded-full' src='src/assets/Logo1.png' />
+        <div className="flex space-x-2 sm:w-40 md:w-60 lg:w-64  fixed bg-gray-100 shadow  px-2 sm:px-6   py-2 sm:py-2.5 md:py-3 lg:py-4">
+            <motion.img 
+                className='h-7 sm:h-8 md:h-9 lg:h-10 rounded-full cursor-pointer' 
+                src='src/assets/Logo1.png' 
+                whileHover={{ 
+                    scale: 1.3,
+                    transition: {
+                        duration: 0.1,
+                        repeatType: "loop",
+                        ease: "easeInOut" 
+                    }
+                 }}
+                whileTap={{ rotateY: 180 }} 
+                transition={{ duration: 0.2, ease: 'easeInOut' }}
+                onClick={() => setShowSidebar(prev => !prev)}/>
             <h2 className="text-lg sm:text-lg md:text-xl lg:text-2xl  font-bold text-blue-600">CareerGPT</h2>
         </div>
-        <aside className="w-50 sm:w-55 md:w-60 lg:w-64  hidden md:block  fixed top-11.5 sm:top-13.5 md:top-15.5 lg:top-19  h-160 sm:h-157 md:h-155 lg:h-150  overflow-y-auto shadow bg-gray-100   px-1.25 sm:px-2 md:px-2.5 lg:px-3">
-            <ul className="space-y-1 md:space-y-1.5 lg:space-y-2  my-1 sm:my-1.5 md:my-2 lg:my-3  max-h-screen ">
-                {sortedRoadmaps.length > 0 ? (
-                    sortedRoadmaps.map((rm, idx) => {
-                    return (
-                    <li
-                        key={idx}
-                        className={`flex items-center group justify-between  h-8 md:h-9 lg:h-10  cursor-pointer  rounded-md md:rounded-lg  transition  ${
-                                    selectedRoadmap?.id === rm.id ? 'bg-blue-300 hover:bg-blue-300' : 'bg-gray-200 hover:bg-gray-300'}`}>
-                        <div 
-                            className="truncate w-full  p-1 md:p-2  rounded-md md:rounded-lg  whitespace-nowrap text-ellipsis"
-                            onClick={() => setSelectedRoadmap(rm)}>
-                            {(editingId === rm.id) ? (
-                                <div>
-                                    <input
-                                        ref={(el) => (inputRef.current[rm.id] = el)}
-                                        type="text"
-                                        value={editedTitles[rm.id] || rm.title}
-                                        className="w-full font-bold  py-1 md:py-2 lg:py-2.5  focus:outline-none"
-                                        onChange={(e) => {
-                                            const updatedTitle = e.target.value;
-                                            setEditedTitles(prev => ({ ...prev, [rm.id]: updatedTitle }));
-                                        }}
-                                        onBlur={() => handleEdit(rm)}
-                                    />
-                                </div>
+
+        {isMidScreen ? (
+            <aside className="w-50 sm:w-55 md:w-60 lg:w-64  fixed top-[46px] sm:top-13.5 md:top-15.5 lg:top-19  h-160 sm:h-157 md:h-155 lg:h-150  overflow-y-auto shadow bg-gray-100   px-1.25 sm:px-2 md:px-2.5 lg:px-3">
+                {/* Sidebar content (ul block) goes here */}
+                <ul className="space-y-1 md:space-y-1.5 lg:space-y-2  my-1 sm:my-1.5 md:my-2 lg:my-3  max-h-screen ">
+                    {sortedRoadmaps.length > 0 ? (
+                        sortedRoadmaps.map((rm, idx) => {
+                        return (
+                        <li
+                            key={idx}
+                            className={`flex items-center group justify-between  h-8 md:h-9 lg:h-10  cursor-pointer  rounded-md md:rounded-lg  transition  ${
+                                        selectedRoadmap?.id === rm.id ? 'bg-blue-300 hover:bg-blue-300' : 'bg-gray-200 hover:bg-gray-300'}`}>
+                            <div 
+                                className="truncate w-full  p-1 md:p-2  rounded-md md:rounded-lg  whitespace-nowrap text-ellipsis"
+                                onClick={() => setSelectedRoadmap(rm)}>
+                                {(editingId === rm.id) ? (
+                                    <div>
+                                        <input
+                                            ref={(el) => (inputRef.current[rm.id] = el)}
+                                            type="text"
+                                            value={editedTitles[rm.id] || rm.title}
+                                            className="w-full font-bold  py-1 md:py-2 lg:py-2.5  focus:outline-none"
+                                            onChange={(e) => {
+                                                const updatedTitle = e.target.value;
+                                                setEditedTitles(prev => ({ ...prev, [rm.id]: updatedTitle }));
+                                            }}
+                                            onBlur={() => handleEdit(rm)}
+                                        />
+                                    </div>
+                                ) : (
+                                    <strong>{rm.title}</strong>
+                                )}
+                            </div>
+
+                            {/* Dots button (only visible on hover) */}
+                            <div className="relative" ref={dropdownRef}>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // Prevent selecting roadmap when clicking dots
+                                        setSelectedDropdownId((prev) => (String(prev) === String(rm.id) ? null : rm.id));
+                                    }}
+                                    className="text-xl mb-4 p-1.5 opacity-0 group-hover:opacity-100 hover:cursor-pointer transition-opacity">
+                                    ...
+                                </button>
+
+                                {(selectedDropdownId === rm.id) && (
+                                    <div ref={(editDeleteRef)} className="absolute right-0  top-11 md:top-12 lg:top-13  flex flex-col bg-white shadow-lg z-10">
+                                        {/* Edit option */}
+                                        <button
+                                            className="px-3 md:px-4 lg:px-5  py-1 md:py-1.5 lg:py-2  text-sm md:text-md  bg-gray-100 hover:bg-gray-200 space-x-2 flex items-center"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setDeletedRoadmap(null); // Reset deleted roadmap
+                                                setEditingId(rm.id);
+                                                setEditedTitles(prev => ({ ...prev, [rm.id]: rm.title }));  
+                                                setSelectedDropdownId(null);                                   
+                                            }}>
+                                            <FaEdit/>
+                                            <div>Edit</div>
+                                        </button>
+
+                                        {/* Delete option */}
+                                        <button
+                                            className="px-3 md:px-4 lg:px-5  py-1 md:py-1.5 lg:py-2  text-sm md:text-md bg-gray-100 hover:bg-gray-200 space-x-2 flex items-center"
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // Prevent selecting roadmap when clicking delete
+                                                setEditingId(null); // Exit editing mode
+                                                setDeletedRoadmap(rm);
+                                                setClickedDeleted(true);
+                                                setSelectedDropdownId(null);
+                                            }}>                                           
+                                            <FaEdge />
+                                            <div>Delete</div>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </li>
+                        )})
+                    ) : (
+                        <p className="text-gray-500">No roadmaps found.</p>
+                    )}
+                </ul>
+            </aside>
+        ) : (
+            <AnimatePresence>
+                {showSidebar && (
+                    <motion.aside
+                        initial={{ x: '-100%' }}
+                        animate={{ x: 0 }}
+                        exit={{ x: '-100%' }}
+                        transition={{ duration: 0.3 }}
+                        className="w-60 lg:w-64  fixed top-[46px] sm:top-13.5 md:top-15.5 lg:top-19  h-160 sm:h-140 md:h-155 lg:h-150  overflow-y-auto shadow bg-gray-100   px-1.25 sm:px-2 md:px-2.5 lg:px-3"
+                    >
+                        <ul className="space-y-1 md:space-y-1.5 lg:space-y-2  my-1 sm:my-1.5 md:my-2 lg:my-3  max-h-screen ">
+                            {sortedRoadmaps.length > 0 ? (
+                                sortedRoadmaps.map((rm, idx) => {
+                                return (
+                                <li
+                                    key={idx}
+                                    className={`flex items-center group justify-between  h-8 md:h-9 lg:h-10  cursor-pointer  rounded-md md:rounded-lg  transition  ${
+                                                selectedRoadmap?.id === rm.id ? 'bg-blue-300 hover:bg-blue-300' : 'bg-gray-200 hover:bg-gray-300'}`}>
+                                    <div 
+                                        className="truncate w-full  p-1 md:p-2  rounded-md md:rounded-lg  whitespace-nowrap text-ellipsis"
+                                        onClick={() => setSelectedRoadmap(rm)}>
+                                        {(editingId === rm.id) ? (
+                                            <div>
+                                                <input
+                                                    ref={(el) => (inputRef.current[rm.id] = el)}
+                                                    type="text"
+                                                    value={editedTitles[rm.id] || rm.title}
+                                                    className="w-full font-bold  py-1 md:py-2 lg:py-2.5  focus:outline-none"
+                                                    onChange={(e) => {
+                                                        const updatedTitle = e.target.value;
+                                                        setEditedTitles(prev => ({ ...prev, [rm.id]: updatedTitle }));
+                                                    }}
+                                                    onBlur={() => handleEdit(rm)}
+                                                />
+                                            </div>
+                                        ) : (
+                                            <strong>{rm.title}</strong>
+                                        )}
+                                    </div>
+
+                                    {/* Dots button (only visible on hover) */}
+                                    <div className="relative" ref={dropdownRef}>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // Prevent selecting roadmap when clicking dots
+                                                setSelectedDropdownId((prev) => (String(prev) === String(rm.id) ? null : rm.id));
+                                            }}
+                                            className="text-xl mb-4 p-1.5 opacity-0 group-hover:opacity-100 hover:cursor-pointer transition-opacity">
+                                            ...
+                                        </button>
+
+                                        {(selectedDropdownId === rm.id) && (
+                                            <div ref={(editDeleteRef)} className="absolute right-0  top-11 md:top-12 lg:top-13  flex flex-col bg-white shadow-lg z-10">
+                                                {/* Edit option */}
+                                                <button
+                                                    className="px-3 md:px-4 lg:px-5  py-1 md:py-1.5 lg:py-2  text-sm md:text-md  bg-gray-100 hover:bg-gray-200 space-x-2 flex items-center"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setDeletedRoadmap(null); // Reset deleted roadmap
+                                                        setEditingId(rm.id);
+                                                        setEditedTitles(prev => ({ ...prev, [rm.id]: rm.title }));  
+                                                        setSelectedDropdownId(null);                                   
+                                                    }}>
+                                                    <FaEdit/>
+                                                    <div>Edit</div>
+                                                </button>
+
+                                                {/* Delete option */}
+                                                <button
+                                                    className="px-3 md:px-4 lg:px-5  py-1 md:py-1.5 lg:py-2  text-sm md:text-md bg-gray-100 hover:bg-gray-200 space-x-2 flex items-center"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation(); // Prevent selecting roadmap when clicking delete
+                                                        setEditingId(null); // Exit editing mode
+                                                        setDeletedRoadmap(rm);
+                                                        setClickedDeleted(true);
+                                                        setSelectedDropdownId(null);
+                                                    }}>                                           
+                                                    <FaEdge />
+                                                    <div>Delete</div>
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </li>
+                                )})
                             ) : (
-                                <strong>{rm.title}</strong>
+                                <p className="text-gray-500">No roadmaps found.</p>
                             )}
-                        </div>
-
-                        {/* Dots button (only visible on hover) */}
-                        <div className="relative" ref={dropdownRef}>
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation(); // Prevent selecting roadmap when clicking dots
-                                    setSelectedDropdownId((prev) => (String(prev) === String(rm.id) ? null : rm.id));
-                                }}
-                                className="text-xl mb-4 p-1.5 opacity-0 group-hover:opacity-100 hover:cursor-pointer transition-opacity">
-                                ...
-                            </button>
-
-                            {(selectedDropdownId === rm.id) && (
-                                <div ref={(editDeleteRef)} className="absolute right-0  top-11 md:top-12 lg:top-13  flex flex-col bg-white shadow-lg z-10">
-                                    {/* Edit option */}
-                                    <button
-                                        className="px-3 md:px-4 lg:px-5  py-1 md:py-1.5 lg:py-2  text-sm md:text-md  bg-gray-100 hover:bg-gray-200 space-x-2 flex items-center"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setDeletedRoadmap(null); // Reset deleted roadmap
-                                            setEditingId(rm.id);
-                                            setEditedTitles(prev => ({ ...prev, [rm.id]: rm.title }));  
-                                            setSelectedDropdownId(null);                                   
-                                        }}>
-                                        <FaEdit/>
-                                        <div>Edit</div>
-                                    </button>
-
-                                    {/* Delete option */}
-                                    <button
-                                        className="px-3 md:px-4 lg:px-5  py-1 md:py-1.5 lg:py-2  text-sm md:text-md bg-gray-100 hover:bg-gray-200 space-x-2 flex items-center"
-                                        onClick={(e) => {
-                                            e.stopPropagation(); // Prevent selecting roadmap when clicking delete
-                                            setEditingId(null); // Exit editing mode
-                                            setDeletedRoadmap(rm);
-                                            setClickedDeleted(true);
-                                            setSelectedDropdownId(null);
-                                        }}>                                           
-                                        <FaEdge />
-                                        <div>Delete</div>
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </li>
-                    )})
-                ) : (
-                    <p className="text-gray-500">No roadmaps found.</p>
+                        </ul>
+                    </motion.aside>
                 )}
-            </ul>
-        </aside>
+            </AnimatePresence>
+        )}
 
 
         {/* Main Content */}

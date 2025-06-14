@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+const BE_BASE_URL = import.meta.env.VITE_BE_BASE_URL;
 
 export const EditProfile = () => {
   const [name, setName] = useState('');
@@ -19,7 +20,7 @@ export const EditProfile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get('https://careergpt-backend.onrender.com/api/auth/me', {
+        const res = await axios.get(`${BE_BASE_URL}/api/auth/me`, {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('token')
           }
@@ -46,7 +47,7 @@ export const EditProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put('https://careergpt-backend.onrender.com/api/auth/edit-profile',
+      await axios.put(`${BE_BASE_URL}/api/auth/edit-profile`,
         { // Data to be sent in the request body
           name: editingName ? name : undefined,
           currentPassword: editingPassword ? currentPassword : undefined,

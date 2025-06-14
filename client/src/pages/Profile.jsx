@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+const BE_BASE_URL = import.meta.env.VITE_BE_BASE_URL;
 
 export function Profile() {
     const [user, setUser] = useState(null);
@@ -10,7 +11,7 @@ export function Profile() {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const res = await axios.get('https://careergpt-backend.onrender.com/api/auth/me', {
+                const res = await axios.get(`${BE_BASE_URL}/api/auth/me`, {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('token')
                 }

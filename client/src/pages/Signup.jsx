@@ -8,6 +8,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { InputField } from '../components/authComponents/InputField';
 import { ButtonField } from '../components/authComponents/ButtonField';
 import bg from '../assets/bg.jpg';
+const BE_BASE_URL = import.meta.env.VITE_BE_BASE_URL;
 
 
 export function Signup() {
@@ -21,7 +22,7 @@ export function Signup() {
     const handleRegister = useCallback(async (e) => {
         e.preventDefault(); // prevent default form reload
         try {
-        const response = await axios.post('https://careergpt-backend.onrender.com/api/auth/register', {
+        const response = await axios.post(`${BE_BASE_URL}/api/auth/register`, {
             name,
             email,
             password,
@@ -42,22 +43,16 @@ export function Signup() {
         try {
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
-            console.log('User info:', user);
-            // Send user data to your backend for further processing
-            const response = await axios.post('https://careergpt-backend.onrender.com/api/auth/google-login', {
-                email: user.email,
-                name: user.displayName,
-                photoURL: user.photoURL,
+            const response = await axios.post(`${BE_BASE_URL}/api/auth/google-login`, {
+            email: user.email,
+            name: user.displayName,
+            photoURL: user.photoURL,
             });
             localStorage.setItem('token', response.data.token);
             navigate('/dashboard');
         } catch (error) {
-            if (error.response && error.response.data && error.response.data.msg) {
-                alert(error.response.data.msg);
-            } else {
-                alert('An unexpected error occurred during login.');
-            }
             console.error('Google sign-in error:', error);
+            alert('Google sign-in failed');
         }
     }, []);
 
@@ -75,11 +70,11 @@ export function Signup() {
         <h1 className="text-lg sm:text-xl md:text-2xl  font-bold  mb-2 sm:mb-3 md:mb-4">Sign Up</h1>
 
         <form onSubmit={handleRegister}>
-            <InputField type="text" placeholder="Enter your name" onChange={(e) => setName(e.target.value)} />
-            <InputField type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
+            <InputField type="text" placeholder="Enter your name" autoComplete="name" onChange={(e) => setName(e.target.value)} />
+            <InputField type="email" placeholder="Email" autoComplete="email" onChange={(e) => setEmail(e.target.value)} />
 
             <div>
-                <InputField type={showPassword ? 'text' : 'password'} placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
+                <InputField type={showPassword ? 'text' : 'password'} placeholder="Password" autoComplete="current-password" onChange={(e) => setPassword(e.target.value)} />
                 <span
                     className="fixed text-gray-600 hover:cursor-pointer sm:pt-0.5  lg:pb-3.5  lg:px-1.5     top-106.5 md:top-82.5   right-27 sm:right-65 md:right-81 lg:right-112 xl:right-145"
                     onClick={() => setShowPassword(!showPassword)}>
