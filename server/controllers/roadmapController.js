@@ -4,6 +4,7 @@ import { generateRoadmapText } from '../utils/openai.js';
 
 import puppeteer from 'puppeteer'; // for PDF generation
 
+
 export const generateRoadmap = async (req, res) => {
   try{
     const { skills, goal } = req.body.data;
