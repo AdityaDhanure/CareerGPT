@@ -146,6 +146,7 @@ export const exportRoadmapPDF = async (req, res) => {
               '--single-process'
             ]
         });
+        console.log('[Puppeteer] Using Chromium path:', puppeteer.executablePath());
         console.log('[Export] Browser launched');
         const page = await browser.newPage();
 
