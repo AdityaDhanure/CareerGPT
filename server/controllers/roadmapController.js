@@ -132,17 +132,25 @@ export const deleteRoadmap = async (req, res) => {
 
 
 export const exportRoadmapPDF = async (req, res) => {
+  console.log('[Export] Received request');
   const { htmlContent } = req.body;
-  console.log("Received HTML:", req.body.htmlContent);
+  console.log('[Export] HTML length:', htmlContent?.length);
   try {
         const browser = await puppeteer.launch({
             headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
+            args: [
+              '--no-sandbox',
+              '--disable-setuid-sandbox',
+              '--disable-dev-shm-usage',
+              '--single-process'
+            ]
         });
+        console.log('[Export] Browser launched');
         const page = await browser.newPage();
 
         // Set HTML content
         await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+        console.log('[Export] HTML set on page');
 
         // Generate PDF
         const pdfBuffer = await page.pdf({
@@ -151,6 +159,7 @@ export const exportRoadmapPDF = async (req, res) => {
         });
 
         await browser.close();
+        console.log('[Export] PDF created, length:', pdfBuffer.length);
 
         // Set headers and send buffer
         res.set({
