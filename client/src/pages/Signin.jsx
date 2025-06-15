@@ -36,6 +36,7 @@ export function Signin() {
                 alert('An unexpected error occurred during login.');
             }
             console.error('Login failed:', error);
+            alert('Login failed. Please check your credentials and try again.');
         }
     }, [email, password, navigate]);
 
